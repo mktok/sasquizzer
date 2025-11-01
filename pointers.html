@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="en" class="h-full">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>SAS Quizzer by MKTOK</title>
+  <link rel="icon" type="image/x-icon" href="image/favicon.ico" />
+  <link rel="apple-touch-icon" sizes="180x180" href="image/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="image/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="image/favicon-16x16.png">
+  <link rel="manifest" href="/site.webmanifest">
+  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <style>
+    @media print {
+      body { background: white !important; color: black !important; zoom: 75%;}
+      header, .no-print { display: none !important; }
+      .print-card { page-break-inside: avoid; border: 1px solid #bbb !important; background: white !important; color: black !important; box-shadow: none !important; }
+      main {
+          overflow: visible !important; /* show all content */
+          padding-bottom: 0 !important; /* remove footer space */
+          height: auto !important;
+        }
+    }
+  </style>
+</head>
+
+<body class="h-full flex flex-col bg-gray-900 text-gray-100">
+
+  <!-- Header -->
+  <header class="fixed top-0 left-0 right-0 flex items-center justify-between px-4 py-3 bg-gray-800 border-b border-gray-700">
+
+    
+    <button id="backButton" class="text-sky-400 hover:text-sky-300 font-semibold text-lg transition">← Back</button>
+    <a class="text-2xl font-bold text-sky-400 hover:text-sky-300 text-center" href="index.html">SAS Quizzer</a>
+    
+
+    <button onclick="window.print()" class="no-print text-sky-400 hover:text-sky-300 font-semibold text-lg transition p-3">🖨 Print</button>
+   
+  </header>
+
+  <!-- Main Content -->
+  <main class="flex-grow px-3 py-4 flex justify-center">
+    <div class="w-full max-w-4xl mb-24 mt-16">
+      <h2 id="title" class="grid grid-cols-2 text-xl font-bold text-sky-300 text-center mb-4"></h2>
+      <div id="status" class="hidden bg-red-700 text-white text-center py-2 text-sm mb-3 rounded-lg"></div>
+      <div id="pointersContainer" class="space-y-4"></div>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="fixed bottom-0 left-0 w-full grid grid-cols-2 gap-2 bg-gray-800 text-gray-400 text-sm py-1 text-center border-t border-gray-700 print:bg-gray-800/0  print:block print:border-0">
+      
+    <div class="text-end self-center">© 2025 SAS Quizzer by MKTOK  
+      <b class="hidden print:block ps-3"> https://mktok.github.io/sasquizzer </b> 
+      <a class="no-print text-start text-bold self-center text-sky-400 hover:text-sky-300 " href="https://t.me/+tn7JdGpskyc5OTk1" > Give Feedback </a>
+   
+    </div> 
+    <button id="toggleAll" class="no-print text-start text-sky-400 hover:text-sky-300 font-semibold text-lg transition p-3 ">
+     🔽 Expand All
+    </button>
+  </footer>
+  
+
+  <script>
+    // Back Button
+    document.getElementById('backButton').addEventListener('click', () => window.history.go(-1));
+
+    // URL Params
+    const params = new URLSearchParams(window.location.search);
+    const file = params.get('file');
+    const type = params.get('type');
+    const displayfield = params.get('displayfield');
+    const author = params.get('author');
+    const CSV_PATH = `data/${type}/${file}`;
+
+    const title = document.getElementById('title');
+    const status = document.getElementById('status');
+    const container = document.getElementById('pointersContainer');
+
+    title.innerHTML = ` 
+                <div class = 'font-bold self-center' >  ${displayfield}</div> 
+                <div class = 'text-sm self-center''> ${author.replace(/\n/g, '<br>') }  </div>
+            `;
+
+    let expanded = false;
+    
+    document.getElementById("toggleAll").addEventListener("click", () => {
+        expanded = !expanded;
+        document.querySelectorAll(".answer").forEach(ans => {
+            ans.classList.toggle("hidden", !expanded);
+        });
+        document.getElementById("toggleAll").textContent = expanded ? "🔼 Collapse All" : "🔽 Expand All";
+        });
+
+    function renderAll(pointers) {
+      container.innerHTML = '';
+      if (!pointers.length) {
+        container.innerHTML = `<div class="text-center text-gray-400">No pointers found.</div>`;
+        return;
+      }
+
+      pointers.forEach((p, index) => {
+        const card = document.createElement('div');
+        card.className = 'print-card bg-gray-800 rounded-xl shadow-lg p-3 border border-gray-600 hover:border-gray-400 transition';
+
+        card.innerHTML = `
+          <div class="cursor-pointer flex flex-col-2 gap-1">
+            <div class="text-sky-300 text-bold text-center print:text-black w-10 flex-none " >${index + 1}  </div>
+            <div class="flex-1" >
+              <div class="text  print:text-black ">${p.question.replace(/\n/g, '<br>') } </div>
+              <div class="answer hidden bg-sky-500/40 flex-1 text-bold mt-1 rounded-lg px-3 py-2 print:block print:text-black print:py-0">
+                   ${p.answer || '-'}
+              </div>
+            </div>
+          </div>
+          
+        `;
+
+        // Toggle answer visibility
+        card.querySelector('.cursor-pointer').addEventListener('click', () => {
+          const ans = card.querySelector('.answer');
+          ans.classList.toggle('hidden');
+        });
+
+        container.appendChild(card);
+      });
+    }
+
+    Papa.parse(CSV_PATH, {
+      download: true,
+      header: true,
+      skipEmptyLines: true,
+      complete: function (res) {
+        try {
+          const pointers = res.data.filter(p => p.question);
+          if (!pointers.length) {
+            status.textContent = 'No valid pointers found.';
+            status.classList.remove('hidden');
+            return;
+          }
+          renderAll(pointers);
+        } catch (err) {
+          status.textContent = 'Error parsing data.';
+          status.classList.remove('hidden');
+          console.error(err);
+        }
+      },
+      error: function (err) {
+        status.textContent = 'Error loading file.';
+        status.classList.remove('hidden');
+        console.error(err);
+      }
+    });
+  </script>
+</body>
+</html>

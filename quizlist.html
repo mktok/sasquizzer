@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <link rel="icon" type="image/x-icon" href="image/favicon.ico" />
+  <link rel="apple-touch-icon" sizes="180x180" href="image/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="image/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="image/favicon-16x16.png">
+  <link rel="manifest" href="/site.webmanifest">
+  <title>SAS Quizzer by MKTOK</title>
+  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="min-h-screen bg-gray-900 text-gray-100 flex flex-col">
+
+  <!-- Header -->
+  <header class="bg-gray-800 shadow-md py-4 px-4 flex items-center justify-between sticky top-0 z-50">
+    <a href="index.html" class="text-sky-400 font-bold text-lg hover:text-sky-300 transition">
+      ← Back
+    </a>
+    <a class="text-2xl font-bold text-sky-400 hover:text-sky-300 flex text-center" href="index.html">SAS Quizzer</a>
+    <div class="w-15"></div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="flex-grow flex flex-col items-center px-4 py-6 mb-24">
+    <h2 id="title" class="text-center text-2xl font-semibold text-sky-300 mb-6">Quiz List</h2>
+
+    <div id="container" class="w-full max-w-4xl text-center text-gray-400">
+      Loading quizzes 
+      <span class="inline-block w-4 h-4 border-2 border-gray-600 border-t-sky-400 rounded-full animate-spin ml-2"></span>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="fixed bottom-0 left-0 w-full grid grid-cols-2 gap-2 bg-gray-800 text-gray-400 text-sm py-2 text-center border-t border-gray-700">
+    <div class="text-end self-center" >© 2025 SAS Quizzer by MKTOK </div> 
+    <a class="text-start text-bold self-center text-sky-400 hover:text-sky-300 " href="https://t.me/+tn7JdGpskyc5OTk1" > Give Feedback </a> 
+    
+  </footer>
+
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const file = params.get('file');
+    const type = params.get('type');
+    const papercode = params.get('papercode');
+    const label = params.get('label');
+    const CSV_PATH = `data/quizlists/${file}`;
+    const container = document.getElementById('container');
+    const title = document.getElementById('title');
+
+    title.textContent = `${papercode} : Select ${label}`;
+
+
+
+    Papa.parse(CSV_PATH, {
+      download: true,
+      header: true,
+      skipEmptyLines: true,
+      complete: function(results) {
+        const data = results.data.filter(r => r.quizefile); //Checking if the quize field is availalbe  
+        container.innerHTML = '';
+
+        if (data.length === 0) {
+          container.textContent = 'No quizzes found.';
+          return;
+        }
+
+        function groupByBookname(data) {
+          const grouped = {};
+          for (let i = 0; i < data.length; i++) {
+            const row = data[i];
+            let book =  row.section + '--' + row.bookname
+            console.log(book)
+            if (!grouped[book]) {
+              grouped[book] = [];
+            }
+            grouped[book].push(row);
+          }
+          return grouped;
+        }
+        // Group by bookname
+        const grouped =  groupByBookname(data);
+
+
+        const wrapper = document.createElement('div');
+        wrapper.className = 'w-full flex flex-col gap-6';
+
+        Object.keys(grouped).forEach(book => {
+          const section = document.createElement('section');
+          section.className = 'text-left bg-gray-700/50 rounded-xl shadow-lg border border-gray-500/90  overflow-hidden';
+
+          const header = document.createElement('div');
+          header.className = 'bg-sky-600/80 text-white font-semibold px-4 py-2 border-b border-gray-700';
+          header.textContent = book;
+          section.appendChild(header);
+
+          const grid = document.createElement('div');
+          grid.className = 'grid grid-cols-1 sm:grid-cols-2 gap-3 p-2';
+
+          grouped[book].forEach(row => {
+            const card = document.createElement('a');
+            card.href = `${type}.html?file=${row.quizefile}.csv&type=${type}&displayfield=${encodeURIComponent(row.displayfield)}&author=${ encodeURIComponent(row.author)}`;
+            card.className = 'grid grid-cols-2 block bg-gray-700  text-sky-100 hover:bg-sky-600 rounded-xl p-2 border border-gray-600 transition shadow hover:shadow-sky-700/30';
+            // card.innerHTML = ` <b> ${row.chapter} </b> <br> ${row.author.replace(/\n/g, '<br>') }`;
+            card.innerHTML = ` 
+                
+                <div class= 'gird text-start text-white font-semi-bold self-center' > 
+                  <div>${row.bookname} : </div> 
+                  <divc> ${row.chapter} </div>
+                </div> 
+                <div class = 'text-end text-sm self-center''> ${row.author.replace(/\n/g, '<br>') }  </div>
+
+              
+            `;
+            grid.appendChild(card);
+          
+            
+          });
+
+          section.appendChild(grid);
+          wrapper.appendChild(section);
+        });
+
+        container.appendChild(wrapper);
+      },
+      error: function(err) {
+        container.textContent = 'Error loading file';
+        console.error(err);
+      }
+    });
+  </script>
+
+</body>
+</html>

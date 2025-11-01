@@ -1,0 +1,35 @@
+question,answer,srno
+to correct an error of classification in the original accounts,Transfer of an item from Head to another Head of account,01:
+"to adjust, by debit or credit to its proper head, an item outstanding under a debt, deposit or remittance head",Transfer of an item from Head to another Head of account,02:
+to adjust inter-departmental and other transactions which do not involve the receipt or payment of cash,Transfer of an item from Head to another Head of account,03:
+to classify items pertaining to more than ono head of account under a single head of account in the first instance than to classify them under each head of account from the beginning,Transfer of an item from Head to another Head of account,04:
+Transfer entries should be prepared in Form,AC 23,05:
+On one side of every transfer entry there should be only one major head to which there may be a debit by credit to sundry heads or vice versa,,06:
+Debit should not be taken against sundry head by credit to sundry heads,,07:
+"As a general periodical adjustment should be made monthly, but if AG feels inconvenience in monthly adjustment, he may postpones it to",Quarterly basis,08:
+"Annual and half-yearly transfers should, as a rule, be avoided unless authorise by",CAG or Govt. on advice of CAG,09:
+"If an item which properly belongs to a Revenue or Expenditure head is wrongly classified under another Revenue or Expenditure head in the accounts of the same Government, the error may be corrected",at any time before A/c of year is closed,10:
+"After the accounts are closed, no correction is admissible, it being sufficient to make a suitable note of the error against the original entry",,11:
+"If the error affects the receipts and disbursements of another Government, or the transactions of a Commercial Department it should be corrected by transfer entry in all cases as soon as the error is discovered",Whether A/c of year is closed or not.,12:
+"An error affecting a debt, deposit or remittance head must be corrected by transfer entry irrespective of the amount involved and oldness.",,13:
+"If the accounts of the year in which the error took place are not closed, the correction should be made by the removal of the item from the head under which it was wrongly taken to head to which it properly belongs.",Using minus entry,14:
+"an item taken to one debt, deposit or remittance head instead of another, the correction should be made by transfer from the one to the other",If A/c of year is closed,15:
+"An item credited to a debt, deposit, suspense or remittance head instead of to a revenue head; or debited to a debt, deposit, suspense or remittance head instead of to an expenditure head â€“ the correction should be made by transfer to the head under which it should originally have appeared.",Dr-DDR Head Cr-Revenue Head Dr-Exp. Head Cr-DDR,16:
+"An item credited to a revenue head instead of to a debt, deposit, suspense or remittance head â€“ correction should be made by debiting refunds and crediting the proper head;",(-) Cr-Revenue Head Cr-DDR,17:
+"An item debited to an expenditure head instead of a debt, deposit, suspense or remittance head â€“ correction should be made by debiting the proper head and crediting the relevant departmental receipt head",Dr-DDR Head Cr-Corresponding Revenue Head,18:
+"In the case of a department not having corresponding receipt head, to the major head 0075 â€“ Miscellaneous General Services",Dr-DDR Head Cr-0075,19:
+"Afer the accounts of the year are closed, corrections or transfers affecting capital major heads should usually be effected without financial adjustment by alteration of progressive figures, without passing the debit and credit entries through the account of the yearâ€™s financial transactions unless",They affect the account of different Govt.,20:
+"A correction by a transfer entry may be proposed by any section of an Account Office, It should be accepted by the other section concerned if the entry has been drawn up according to rule and necessary particulars are furnished.",,21:
+a transfer Entry Number Book in Form A.C. 24 should be maintained in each audit or accounts section,,22:
+The Transfer Entry Number Book for Central transactions should be kept separate from that for State transactions,,23:
+"The entries proposed by the several sections should be numbered serially by each, a distinctive letter being used by each section and these numbers entered in their respective Number Books",,24:
+The number to be given to an entry received from another section should be expressed as a fraction,Nume-Originator Deno-Receiver,25:
+The addition or deduction which should be posted la Departmental Abstracts or the Detail Books on account of the transfer entries should be worked out from the separate transfer entries of all sections by preparing a Combined Transfer Ledger & Abstract in,AC 25,26:
+"In the case of revenue and expenditure heads, it is the net debit or credit under the head in the Combined Transfer Ledger and Abstract that appear as a debit or credit in the Abstract",,27:
+"In the case of debt, deposit or remittance heads, the gross credit and the gross debit should both appear in the Abstract",Cr-Receipt side Dr-Payment side,28:
+When large transfers are made from one DDR head to another in order to correct the original classification in account the correction should be using minus of original entry,Cr-Minus Cr. Dr-Minus Dr.,29:
+"When the correction is in rectification of a misclassification of the same year, by deduct entry against the original debit or credit, as the case may be",,30:
+a note of a correction affecting district figures relating to revenue and expenditure heads should be made against the original entry in the Departmental Abstract/Compilation Book of the month in which the error occurred,,31:
+Transfers affecting a DDR head should be made by new entries in the month of correction and need not be noted- against the original entry in the Detail Book,,32:
+"In important cases, a note should be made in red ink, across the original entry in the Detail Book, of the month of its reversal and across the correcting entry of the month of the original one",,33:
+"At the end of the year, the monthly volumes of the Combined Transfer Ledger and Abstract should be arranged in order of the months and bound into convenient volumes.",,34:

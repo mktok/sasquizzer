@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="en" class="h-full">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>SAS Quizzer by MKTOK</title>
+  <link rel="icon" type="image/x-icon" href="image/favicon.ico" />
+  <link rel="apple-touch-icon" sizes="180x180" href="image/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="image/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="image/favicon-16x16.png">
+  <link rel="manifest" href="/site.webmanifest">
+  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    #qButtonsWrapper::-webkit-scrollbar { height: 6px; }
+    #qButtonsWrapper::-webkit-scrollbar-track { background: #1f2937; border-radius: 8px; }
+    #qButtonsWrapper::-webkit-scrollbar-thumb { background-color: #38bdf8; border-radius: 8px; }
+    #qButtonsWrapper::-webkit-scrollbar-thumb:hover { background-color: #0ea5e9; }
+  </style>
+  
+</head>
+
+<body class="h-full flex flex-col bg-gray-900 text-gray-100">
+
+  <header class="flex items-center justify-between px-4 py-3 bg-gray-800 border-b border-gray-700 sticky top-0 z-50">
+    <button id="backButton" class="text-sky-400 hover:text-sky-300 font-semibold text-lg transition">← Back</button>
+    <a class="text-2xl font-bold text-sky-400 hover:text-sky-300 text-center flex-grow" href="index.html">SAS Quizzer</a>
+    <a id="listview" class="w-15 text-sky-400 hover:text-sky-300 font-semibold text-lg transition">List View</a>
+  </header>
+
+  <div class="flex justify-center items-start mt-4 pb-24 px-2">
+    <div class="h-full w-full max-w-3xl">
+      <div id="title" class="grid grid-cols-2 text-lg font-bold text-sky-300 text-center pb-3"></div>
+      <div id="status" class="hidden bg-red-700 text-white text-center py-2 text-sm rounded-lg"></div>
+
+      <section class=" flex flex-col-2 gap-1  bg-sky-500/40 shadow-md px-4 py-4 rounded-lg border-b border-gray-700">
+        <div id="qnum" class="rounded-md text-start font-medium print:text-black">-</div>
+          <div id="question" class=" flex-1 font-medium ps-2"> - </div>
+      </section>
+
+      <main id="optsContainer" class="flex-grow overflow-y-auto px-2 py-3 mb-24">
+        <div id="opts" class="grid gap-3"></div>
+        <div id="meta" class="hidden bg-sky-500/60 text-white px-3 py-2 mt-4 mb-24 rounded-lg font-small"></div>
+      </main>
+
+      <div class="fixed bottom-10 left-1/2 -translate-x-1/2 w-full max-w-3xl bg-gray-700 rounded-lg border-t border-gray-700 px-3 py-3 flex items-center gap-2 overflow-hidden">
+        <button id="prev" class="px-3 py-2 rounded-lg border border-gray-600 hover:bg-gray-600 flex-shrink-0">◀</button>
+        <div id="qButtonsWrapper" class="flex-1 overflow-x-auto flex space-x-2 px-1 py-1 rounded-lg">
+          <div id="qButtonsContainer" class="flex flex-nowrap gap-2 min-w-max"></div>
+        </div>
+        <button id="next" class="px-3 py-2 rounded-lg bg-sky-500 text-black font-semibold hover:bg-sky-400 flex-shrink-0">▶</button>
+      </div>
+    </div>
+  </div>
+
+  <footer class="fixed bottom-0 left-0 right-0 bg-gray-800 border-t border-gray-700 text-gray-400 text-xs text-center py-2 flex items-center justify-between px-3">
+    <div>Use ← → keys and 1–4 to choose</div>
+    <div>© 2025 SAS Quizzer by MKTOK</div>
+    <a class="text-start text-bold self-center text-sky-400 hover:text-sky-300 " href="https://t.me/+tn7JdGpskyc5OTk1" > Give Feedback </a> 
+  </footer>
+
+
+  <script>
+    document.getElementById('backButton').addEventListener('click', () => window.history.go(-1));
+
+    const params = new URLSearchParams(window.location.search);
+    const file = params.get('file');
+    const type = params.get('type');
+    const displayfield = params.get('displayfield');
+    const author = params.get('author');
+    const CSV_PATH = `data/${type}/${file}`;
+
+    document.getElementById('listview').href = `mcqs_listview.html?file=${file}&type=${type}&displayfield=${encodeURIComponent(displayfield)}&author=${ encodeURIComponent(author)}`;
+    // document.getElementById('title').textContent = displayfield || "MCQ Viewer";
+    document.getElementById('title').innerHTML = ` 
+                
+                <div class = 'font-bold self-center' >  ${displayfield}</div> 
+                <div class = 'text-sm self-center''> ${author.replace(/\n/g, '<br>') } </div>
+            `;
+
+    const qnumEl = document.getElementById('qnum');
+    const questionEl = document.getElementById('question');
+    const optsEl = document.getElementById('opts');
+    const prevBtn = document.getElementById('prev');
+    const nextBtn = document.getElementById('next');
+    const metaEl = document.getElementById('meta');
+    const status = document.getElementById('status');
+    const qButtonsContainer = document.getElementById('qButtonsContainer');
+
+    let questions = [];
+    let idx = 0;
+
+    function renderQuestionButtons() {
+      qButtonsContainer.innerHTML = "";
+      questions.forEach((_, i) => {
+        const btn = document.createElement("button");
+        btn.textContent = i + 1;
+        btn.className = `px-3 py-1 rounded-md text-sm font-semibold transition ${i === idx ? "bg-sky-500 text-black" : "bg-gray-800 text-gray-300 hover:bg-gray-600"}`;
+        btn.onclick = () => { idx = i; render(); };
+        qButtonsContainer.appendChild(btn);
+      });
+    }
+
+    function render() {
+      const q = questions[idx];
+      qnumEl.innerHTML = `<b>${idx + 1}</b.`;
+      questionEl.textContent = q.question;
+      optsEl.innerHTML = "";
+      q.options.forEach((opt, i) => {
+        const btn = document.createElement("button");
+        btn.className = "opt block w-full text-left px-4 py-3 rounded-lg border border-gray-700 bg-gray-700 hover:bg-gray-600 transition";
+        btn.innerHTML = `<b>${String.fromCharCode(65 + i)}.</b> ${opt}`;
+        btn.onclick = () => handleSelection(i);
+        optsEl.appendChild(btn);
+      });
+      metaEl.classList.add("hidden");
+      renderQuestionButtons();
+      const activeBtn = qButtonsContainer.querySelector(".bg-sky-500");
+      if (activeBtn) activeBtn.scrollIntoView({ behavior: "smooth", inline: "center" });
+    }
+
+    function handleSelection(i) {
+      const q = questions[idx];
+      const correctIdx = q.answer.charCodeAt(0) - 65;
+      const buttons = optsEl.children;
+      for (let b = 0; b < buttons.length; b++) buttons[b].disabled = true;
+      if (i === correctIdx) buttons[i].classList.add('bg-green-800', 'text-white', 'hover:bg-green-800');
+      else {
+        buttons[i].classList.add('bg-red-800', 'text-white', 'hover:bg-red-800');
+        if (buttons[correctIdx]) buttons[correctIdx].classList.add('bg-green-800', 'text-white' , 'hover:bg-green-800');
+      }
+      metaEl.classList.remove("hidden");
+      metaEl.textContent = "Hint: " + (q.hint || "No hint provided");
+      renderQuestionButtons();
+    }
+
+    prevBtn.onclick = () => { if (idx > 0) { idx--; render(); } };
+    nextBtn.onclick = () => { if (idx < questions.length - 1) { idx++; render(); } };
+
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "ArrowRight") nextBtn.click();
+      if (e.key === "ArrowLeft") prevBtn.click();
+      if (["1", "2", "3", "4"].includes(e.key)) {
+        const n = parseInt(e.key) - 1;
+        if (optsEl.children[n]) optsEl.children[n].click();
+      }
+    });
+
+    Papa.parse(CSV_PATH, {
+      download: true,
+      header: true,
+      skipEmptyLines: true,
+      complete: res => {
+        try {
+          questions = res.data.map(r => ({
+            question: r.question?.trim(),
+            options: [r.option_a, r.option_b, r.option_c, r.option_d].map(o => o?.trim()),
+            answer: (r.answer || '').trim().charAt(0).toUpperCase(),
+            hint: r.hint || ''
+          })).filter(q => q.question);
+          if (!questions.length) { status.textContent = "No valid questions found."; status.classList.remove("hidden"); return; }
+          render();
+        } catch {
+          status.textContent = "Error parsing questions."; status.classList.remove("hidden");
+        }
+      },
+      error: err => { status.textContent = "Error loading file."; status.classList.remove("hidden"); console.error(err); }
+    });
+  </script>
+</body>
+</html>
