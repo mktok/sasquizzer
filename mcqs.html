@@ -12,7 +12,7 @@
   </script>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>SAS Quizzer by MKTOK</title>
+  <title>SAS Quizzer by MKTOK: MCQs</title>
   <link rel="icon" type="image/x-icon" href="image/favicon.ico" />
   <link rel="apple-touch-icon" sizes="180x180" href="image/apple-touch-icon.png">
   <link rel="icon" type="image/png" sizes="32x32" href="image/favicon-32x32.png">
@@ -78,6 +78,9 @@
     const displayfield = params.get('displayfield');
     const author = params.get('author');
     const CSV_PATH = `data/${type}/${file}`;
+    const pagetitle = document.getElementsByTagName("title")[0]
+    pagetitle.textContent = `SAS Quizzer-MCQs-${displayfield}`
+
 
     document.getElementById('listview').href = `mcqs_listview.html?file=${file}&type=${type}&displayfield=${encodeURIComponent(displayfield)}&author=${ encodeURIComponent(author)}`;
     // document.getElementById('title').textContent = displayfield || "MCQ Viewer";
@@ -95,6 +98,7 @@
     const metaEl = document.getElementById('meta');
     const status = document.getElementById('status');
     const qButtonsContainer = document.getElementById('qButtonsContainer');
+    
 
     let questions = [];
     let idx = 0;

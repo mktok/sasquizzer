@@ -12,7 +12,7 @@
   </script>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>SAS Quizzer by MKTOK</title>
+  <title>SAS Quizzer by MKTOK: MCQs ListView</title>
   <link rel="icon" type="image/x-icon" href="image/favicon.ico" />
   <link rel="apple-touch-icon" sizes="180x180" href="image/apple-touch-icon.png">
   <link rel="icon" type="image/png" sizes="32x32" href="image/favicon-32x32.png">
@@ -94,6 +94,8 @@
     const title = document.getElementById('title');
     const status = document.getElementById('status');
     const container = document.getElementById('questionsContainer');
+    const pagetitle = document.getElementsByTagName("title")[0]
+    pagetitle.textContent = `SAS Quizzer-MCQs-ListView-${displayfield}`
 
     // title.textContent = displayfield || 'All MCQs';
     title.innerHTML = ` 

@@ -17,7 +17,7 @@
   <link rel="icon" type="image/png" sizes="32x32" href="image/favicon-32x32.png">
   <link rel="icon" type="image/png" sizes="16x16" href="image/favicon-16x16.png">
   <link rel="manifest" href="/site.webmanifest">
-  <title>SAS Quizzer by MKTOK</title>
+  <title>SAS Quizzer-Quiz List</title>
   <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
@@ -59,8 +59,10 @@
     const CSV_PATH = `data/quizlists/${file}`;
     const container = document.getElementById('container');
     const title = document.getElementById('title');
-
     title.textContent = `${papercode} : Select ${label}`;
+    
+    const pagetitle = document.getElementsByTagName("title")[0]
+    pagetitle.textContent = `SAS Quizzer-Quiz List-${papercode}-${label}`
 
 
 
@@ -82,7 +84,7 @@
           for (let i = 0; i < data.length; i++) {
             const row = data[i];
             let book =  row.section + '--' + row.bookname
-            console.log(book)
+            // console.log(book)
             if (!grouped[book]) {
               grouped[book] = [];
             }
